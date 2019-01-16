@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="746.92" height="114.437" viewBox="0 0 746.92 114.437">
+  <g id="Group_10" data-name="Group 10" transform="translate(-1008.58 -270.563)">
+    <g id="Rectangle_3" data-name="Rectangle 3" transform="translate(1110 281)" fill="#fff" stroke="#707070" stroke-width="1">
+      <rect width="645" height="78" stroke="none"/>
+      <rect x="0.5" y="0.5" width="644" height="77" fill="none"/>
+    </g>
+    <line id="Line_6" data-name="Line 6" y2="78" transform="translate(1390.5 281.5)" fill="none" stroke="#707070" stroke-width="1"/>
+    <line id="Line_7" data-name="Line 7" y2="78" transform="translate(1440.5 281.5)" fill="none" stroke="#707070" stroke-width="1"/>
+    <line id="Line_8" data-name="Line 8" x2="645" transform="translate(1110.5 321.5)" fill="none" stroke="#707070" stroke-width="1"/>
+    <g id="Group_8" data-name="Group 8" transform="translate(89 99)">
+      <rect id="Rectangle_4" data-name="Rectangle 4" width="611" height="30.489" transform="translate(1033 188)" fill="rgba(174,233,53,0.36)"/>
+      <text id="header_--_25px" data-name="header -- 25px" transform="translate(1305 209.744)" fill="#707070" font-size="16" font-family="SegoeUI-Bold, Segoe UI" font-weight="700"><tspan x="0" y="0">header -- 25px</tspan></text>
+    </g>
+    <g id="Group_9" data-name="Group 9" transform="translate(89 138)">
+      <rect id="Rectangle_4-2" data-name="Rectangle 4" width="611" height="30.489" transform="translate(1033 188)" fill="rgba(53,233,59,0.36)"/>
+      <text id="footer_--_25px" data-name="footer -- 25px" transform="translate(1305 209.744)" fill="#707070" font-size="16" font-family="SegoeUI-Bold, Segoe UI" font-weight="700"><tspan x="0" y="0">footer -- 25px</tspan></text>
+    </g>
+    <text id="_50px" data-name="50px" transform="translate(1403 381)" fill="#707070" font-size="14" font-family="SegoeUI, Segoe UI"><tspan x="0" y="0">50px</tspan></text>
+    <text id="row1-start" transform="translate(1008.58 285.563)" fill="#707070" font-size="14" font-family="SegoeUI-Bold, Segoe UI" font-weight="700"><tspan x="0" y="0">row1-start</tspan></text>
+    <text id="row1-end_row2-start" data-name="row1-end,
+row2-start" transform="translate(1008.58 317.563)" fill="#707070" font-size="14" font-family="SegoeUI-Bold, Segoe UI" font-weight="700"><tspan x="0" y="0">row1-end,</tspan><tspan x="0" y="19">row2-start</tspan></text>
+    <text id="row2-end" transform="translate(1008.58 361.563)" fill="#707070" font-size="14" font-family="SegoeUI-Bold, Segoe UI" font-weight="700"><tspan x="0" y="0">row2-end</tspan></text>
+    <line id="Line_9" data-name="Line 9" x2="22" transform="translate(1083.5 357.5)" fill="none" stroke="#707070" stroke-width="1"/>
+    <line id="Line_10" data-name="Line 10" x2="22" transform="translate(1083.5 321.5)" fill="none" stroke="#707070" stroke-width="1"/>
+    <path id="Path_1" data-name="Path 1" d="M0,0H22" transform="translate(1084.5 281.5)" fill="none" stroke="#707070" stroke-width="1"/>
+    <text id="auto" transform="translate(1593 381)" fill="#707070" font-size="14" font-family="SegoeUI, Segoe UI"><tspan x="0" y="0">auto</tspan></text>
+    <text id="auto-2" data-name="auto" transform="translate(1227 381)" fill="#707070" font-size="14" font-family="SegoeUI, Segoe UI"><tspan x="0" y="0">auto</tspan></text>
+  </g>
+</svg>

@@ -13,30 +13,30 @@
     <meta http-equiv="expires" content="0">
     <title>Grid layout demo</title>
     <style type="text/css">
-      .grid-container {
+      .container {
         display: grid;
-        grid-template-rows: repeat(3, 100px);
-        grid-template-columns: repeat(3, 100px);
+        grid-template-columns: 60px 60px 60px;
+        grid-template-rows: 60px 60px 60px;
+        grid-auto-flow: row;
+      }
+      div {
+        background: #e9e9e9;
+      }
+      .item-a {
+        grid-column: 1 / 3;
+      }
+      .item-b {
+        grid-column: 1 / 3;
       }
     </style>
 	</head>
 	<body>
-	   <div class="grid-container">
-        <!-- <div class="grid-item">
-          item1
-        </div>
-        <div class="grid-item">
-          item2
-        </div>
-        <div class="grid-item">
-          item3
-        </div>
-        <div class="grid-item">
-          item4
-        </div>
-        <div class="grid-item">
-          item5
-        </div> -->
-     </div>
+      <section class="container">
+          <div class="item-a">item-a</div>
+          <div class="item-b">item-b</div>
+          <div class="item-c">item-c</div>
+          <div class="item-d">item-d</div>
+          <div class="item-e">item-e</div>
+        </section>
 	</body>
 </html>
