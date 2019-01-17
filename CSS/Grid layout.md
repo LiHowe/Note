@@ -251,9 +251,9 @@
     }
     ```
     + **start**: 顶部对齐，将网格项对齐到容器垂直方向起始边缘。  
-    <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-start.svg" width=200>
+      <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-start.svg" width=200>  
     + **end**: 底部对齐，将网格项对齐到容器垂直方向结束边缘。  
-      <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-end.svg" width=200>
+      <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-end.svg" width=200>  
     + **center**: 居中对齐，将网格项对齐到容器垂直方向中间位置。  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-center.svg" width=200>
     + **stretch**: 填充，将网格项填满容器高度  
