@@ -1,7 +1,7 @@
 import AuthenticationContext from './adal'
 /**
  * adal for Vue.js
- * @author zihao.he
+ * @author LiHowe
  * @since 2018/10/11 16:44:53
  */
 export default {
