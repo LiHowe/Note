@@ -119,7 +119,7 @@
     注意，你不能使用这个表达式来命名网格线，该表达式只适用于网格区域。当你使用这个表达式来命名网格区域的时候，网格线已经被自动命名。 就像该例子中的header区域，那么这个区域**上面**和**左面**的网格线就是`header-start`，对应的**下面**和**右面**的网格线就是`header-end`
 
 3. ### **grid-template**
-   是`grid-template-rows`, `grid-template-columns`和`grid-template-areas`的简写形式
+   是`grid-template-rows`, `grid-template-columns`和`grid-template-areas`的合并简写形式
    ```css
     .container {
       grid-template: none | <grid-template-rows> / <grid-template-columns>;
@@ -169,7 +169,7 @@
     ![](https://css-tricks.com/wp-content/uploads/2018/11/dddgrid-gap.svg)
 
 4. ### **grid-gap**
-    是`grid-row-gap`和`grid-column-gap`的简写形式
+    是`grid-row-gap`和`grid-column-gap`的合并简写形式
     ```css
     .container {
       grid-gap: <grid-row-gap> <grid-column-gap>;
@@ -202,8 +202,8 @@
       align-items: start | end | center | stretch;
     }
     ```
-    + **start**: 顶部对齐， 将网格项对齐到单元格垂直方向起始边缘。
-    + **end**: 底部对齐，将网格项对齐到单元格垂直方向结束边缘。
+    + **start**: 顶部对齐， 将网格项对齐到单元格垂直方向起始边缘。  
+    + **end**: 底部对齐，将网格项对齐到单元格垂直方向结束边缘。  
     + **center**: 居中对齐，将网格项对齐到单元格垂直方向中间位置。
     + **stretch**: 填充(默认)， 将网格项填满单元格高度
     下方分别为start, end, center和stretch的效果。
@@ -215,7 +215,7 @@
     你也可以通过设置网格项的`align-self`属性来控制每一个网格项的对齐方式
 
 6. ### **place-items**
-    是`align-items`和`justify-items`的简写形式
+    是`align-items`和`justify-items`的合并简写形式
     ```css
     .container {
       place-items: <align-items> <justify-items>
@@ -230,19 +230,19 @@
         justify-content: start | end | center | stretch | space-around | space-between | space-evenly;
       }
     ```
-    + **start**: 左侧对齐，将网格项对齐到容器水平方向起始边缘。
+    + **start**: 左侧对齐，将网格项对齐到容器水平方向起始边缘。  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-content-start.svg" width=200>
-    + **end**: 右侧对齐，将网格项对齐到容器水平方向结束边缘。
+    + **end**: 右侧对齐，将网格项对齐到容器水平方向结束边缘。  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-content-end.svg" width=200>
-    + **center**: 居中对齐，将网格项对齐到容器水平方向中间位置。
+    + **center**: 居中对齐，将网格项对齐到容器水平方向中间位置。  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-content-center.svg" width=200>
-    + **stretch**: 填充，将网格项填满容器宽度
+    + **stretch**: 填充，将网格项填满容器宽度  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-content-stretch.svg" width=200>
-    + **space-around**: 每个网格项之间设置相同的间距，两端设置一半间距
+    + **space-around**: 每个网格项之间设置相同的间距，两端设置一半间距  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-content-space-around.svg" width=200>
-    + **space-between**: 每个网格项之间设置相同的间距，两端不设置间距
+    + **space-between**: 每个网格项之间设置相同的间距，两端不设置间距  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-content-space-between.svg" width=200>
-    + **space-evenly**: 每个网格项之间设置相同的间距，两端设置与网格间同样的间距
+    + **space-evenly**: 每个网格项之间设置相同的间距，两端设置与网格间同样的间距  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-content-space-evenly.svg" width=200>
 
     ```css
@@ -250,23 +250,23 @@
       align-content: start | end | center | stretch | space-around | space-between | space-evenly;
     }
     ```
-    + **start**: 顶部对齐，将网格项对齐到容器垂直方向起始边缘。
+    + **start**: 顶部对齐，将网格项对齐到容器垂直方向起始边缘。  
     <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-start.svg" width=200>
-    + **end**: 底部对齐，将网格项对齐到容器垂直方向结束边缘。
+    + **end**: 底部对齐，将网格项对齐到容器垂直方向结束边缘。  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-end.svg" width=200>
-    + **center**: 居中对齐，将网格项对齐到容器垂直方向中间位置。
+    + **center**: 居中对齐，将网格项对齐到容器垂直方向中间位置。  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-center.svg" width=200>
-    + **stretch**: 填充，将网格项填满容器高度
+    + **stretch**: 填充，将网格项填满容器高度  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-stretch.svg" width=200>
-    + **space-around**: 每个网格项之间设置相同的间距，两端设置一半间距
+    + **space-around**: 每个网格项之间设置相同的间距，两端设置一半间距  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-space-around.svg" width=200>
-    + **space-between**: 每个网格项之间设置相同的间距，两端不设置间距
+    + **space-between**: 每个网格项之间设置相同的间距，两端不设置间距  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-space-between.svg" width=200>
-    + **space-evenly**: 每个网格项之间设置相同的间距，两端设置与网格间同样的间距
+    + **space-evenly**: 每个网格项之间设置相同的间距，两端设置与网格间同样的间距  
       <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-content-space-evenly.svg" width=200>
 
 8. ### **place-content**
-    是`align-content`与`justify-content`的简写形式
+    是`align-content`与`justify-content`的合并简写形式
     ```css
     .container {
       place-content: <align-content> <justify-content>
@@ -367,7 +367,7 @@
     <img src="../illustrations/svg_CSS_5.svg" height=200>
 
 11. ### **grid**
-    为`grid-template-rows`, `grid-template-columns`, `grid-template-areas`, `grid-auto-rows`, `grid-auto-columns`, 和 `grid-auto-flow`的简写形式, 其余的次级属性被重置为初始值。
+    为`grid-template-rows`, `grid-template-columns`, `grid-template-areas`, `grid-auto-rows`, `grid-auto-columns`, 和 `grid-auto-flow`的合并简写形式, 其余的次级属性被重置为初始值。
     ```css
     .container {
       grid: <'grid-template'> | <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>? | [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>
@@ -411,3 +411,120 @@
       grid-auto-columns: 200px;
     }
     ```
+
+## 二、**网格项(Grid items)**属性说明  
+>注意： 网格项的float, display:inline-block/table-cell, vertical-align和column-\*属性将会失效。
+
+1. ### **grid-column-start/grid-column-end/grid-row-start/grid-row-end**
+    通过引用特定的网格线(grid line)来确定网格项在网格容器中的位置。
+    ```css
+      .item {
+        grid-column-start: <number> | <name> | span <number> | span <name> | auto
+        grid-column-end: <number> | <name> | span <number> | span <name> | auto
+        grid-row-start: <number> | <name> | span <number> | span <name> | auto
+        grid-row-end: <number> | <name> | span <number> | span <name> | auto
+      }
+    ```
+    + **\<number\> / \<name\>**: 可以是网格线编号或者已命名的网格线的名字
+    + **span \<number\>**: 该网格项跨越的轨道数量
+    + **span \<name\>**: 该网格项跨越到网格线的名称
+    + **auto**: 自动放置
+    注意: 如果没有设置`grid-column-end/grid-row-end` ，那么网格项将默认跨越一个轨道  
+    例:
+    ```css
+    .item-a {
+      grid-column-start: 2;
+      grid-column-end: five;
+      grid-row-start: row1-start;
+      grid-row-end: 3;
+    }
+    ```
+    ![](https://css-tricks.com/wp-content/uploads/2018/11/grid-column-row-start-end-01.svg)
+    ```css
+    .item-b {
+      grid-column-start: 1;
+      grid-column-end: span col4-start;
+      grid-row-start: 2;
+      grid-row-end: span 2;
+    }
+    ```
+    ![](https://css-tricks.com/wp-content/uploads/2018/11/grid-column-row-start-end-02.svg)
+
+2. ### **grid-column/grid-row**
+    是 `grid-column-start` + `grid-column-end`,和 `grid-row-start` + `grid-row-end`的合并简写形式
+    ```css
+    .item {
+      grid-column: <start-line> / <end-line> | <start-line> / span <value>;
+      grid-row: <start-line> / <end-line> | <start-line> / span <value>;
+    }
+    ```
+    例:
+    ```css
+    .item-c {
+      grid-column: 3 / span 2;
+      grid-row: third-line / 4;
+    }
+    ```
+    ![](https://css-tricks.com/wp-content/uploads/2018/11/grid-column-row.svg)
+
+3. ### **grid-area**
+    设置网格项名称，便于网格模板创建(grid-template-areas)的时候引用。另外，这个属性还是`grid-row-start` + `grid-column-start` + `grid-row-end` + `grid-column-end`的合并简写形式。  
+    ```css
+    .item {
+      grid-area: <name> | <row-start> / <column-start> / <row-end> / <column-end>;
+    }
+    ```
+    例:   
+    + 给item-d起名为 header  
+    ```css
+    .item-d {
+      grid-area: header
+    }
+    ```
+    + 合并简写形式
+    ```css
+    .item-d {
+      grid-area: 1 / col4-start / last-line / 6
+    }
+    ```
+    ![](https://css-tricks.com/wp-content/uploads/2018/11/grid-area.svg)
+
+4. ### **justify-self/align-self**
+    设置网格项自己在单元格内的水平/垂直对齐方式
+    ```css
+    .item {
+      justify-self: start | end | center | stretch(默认);
+    }
+    ```
+    <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-self-start.svg" height=200/>
+    <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-self-end.svg" height=200/>
+    <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-self-center.svg" height=200/>
+    <img src="https://css-tricks.com/wp-content/uploads/2018/11/justify-self-stretch.svg" height=200/>
+
+    ```css
+    .item {
+      align-self: start | end | center | stretch(默认);
+    }
+    ```
+    <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-self-start.svg" height=200/>
+    <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-self-end.svg" height=200/>
+    <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-self-center.svg" height=200/>
+    <img src="https://css-tricks.com/wp-content/uploads/2018/11/align-self-stretch.svg" height=200/>
+
+5. ### **place-self**
+    是`justify-self` 和 `align-self`的合并简写形式
+    ```css
+    .item-a {
+      place-self: center;
+    }
+    /*相当于*/
+    .item-a {
+      justify-self: center;
+      align-self: center;
+    }
+    ```
+    <img src="https://css-tricks.com/wp-content/uploads/2018/11/place-self-center.svg" height=200/>
+
+    参考文档:
+    1. https://css-tricks.com/snippets/css/complete-guide-grid/
+    2. https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid
