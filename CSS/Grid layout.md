@@ -30,7 +30,7 @@
 
 <img src="../illustrations/img_CSS_2.PNG" width=300 height=300>
 
-## 属性说明
+## 一、**容器**属性说明
 1. ### **grid-template-rows/grid-template-columns**
     该属性用于定义网格线名称以及网格轨道大小(也就是直译过来的意思, 网格行/列模板)
     ```
@@ -367,7 +367,7 @@
     <img src="../illustrations/svg_CSS_5.svg" height=200>
 
 11. ### **grid**
-    为`grid-template-rows`, `grid-template-columns`, `grid-template-areas`, `grid-auto-rows`, `grid-auto-columns`, 和 `grid-auto-flow`的简写形式
+    为`grid-template-rows`, `grid-template-columns`, `grid-template-areas`, `grid-auto-rows`, `grid-auto-columns`, 和 `grid-auto-flow`的简写形式, 其余的次级属性被重置为初始值。
     ```css
     .container {
       grid: <'grid-template'> | <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>? | [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>
