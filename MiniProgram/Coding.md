@@ -1,6 +1,0 @@
-# Coding
-
-## Page
-
-
-## Component
