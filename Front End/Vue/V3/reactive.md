@@ -1,339 +1,191 @@
-# 响应式实现
+# Vue / reactivity
 
-> vue-next packages > reactivity > src > reactive.ts
+> 本笔记基于@vue/reactivity version: 3.0.0
+>
+> 该包是vue3实现数据响应式的
 
-## 变量定义
 
-> WeakMap中的key是弱引用的, key不可枚举, 便于垃圾回收.
-> 其中key只可以为对象的引用,当所引用对象未被使用或者被回收时map中键值对也会被回收
-> WeakSet中的值也是弱引用, 处理方式类似于WeakMap
 
-```typescript
-// 源码
-// The main WeakMap that stores {target -> key -> dep} connections.
-// Conceptually, it's easier to think of a dependency as a Dep class
-// which maintains a Set of subscribers, but we simply store them as
-// raw Sets to reduce memory overhead.
-export type Dep = Set<ReactiveEffect>
-export type KeyToDepMap = Map<string | symbol, Dep>
-export const targetMap = new WeakMap<any, KeyToDepMap>() // 响应式对象与其影响的映射
-
-// WeakMaps that store {raw <-> observed} pairs.
-const rawToReactive = new WeakMap<any, any>() // 未处理数据与对应响应式数据
-const reactiveToRaw = new WeakMap<any, any>() // 响应式数据与对应未处理数据
-const rawToReadonly = new WeakMap<any, any>() // 未处理数据与对应只读数据
-const readonlyToRaw = new WeakMap<any, any>() // 只读数据与对应未处理数据
-
-// WeakSets for values that are marked readonly or non-reactive during
-// observable creation.
-const readonlyValues = new WeakSet<any>()    // 只读数据集合
-const nonReactiveValues = new WeakSet<any>() // 无需转成响应式的数据集合
-
-// 集合类型Set, Map, WeakMap, WeakSet
-const collectionTypes = new Set<Function>([Set, Map, WeakMap, WeakSet])
-// 可观测数据正则, 匹配 Object|Array|Map|Set|WeakMap|WeakSet
-const observableValueRE = /^\[object (?:Object|Array|Map|Set|WeakMap|WeakSet)\]$/
-```
-
-## 实现响应式方法
+> src/reactive.ts
 
 ```typescript
-// 源码
-// 实现数据监听方法
 export function reactive(target: object) {
   // if trying to observe a readonly proxy, return the readonly version.
-  // 如果目标(target)是实际对象的只读代理对象, 那么返回该代理对象
-  if (readonlyToRaw.has(target)) {
+  if (target && (target as Target)[ReactiveFlags.IS_READONLY]) {
     return target
   }
-  // target is explicitly marked as readonly by user
-  // 如果目标(target)是用户直接标记为只读的, 返回readonly的返回值
-  if (readonlyValues.has(target)) {
-    return readonly(target)
-  }
   return createReactiveObject(
     target,
-    rawToReactive,
-    reactiveToRaw,
-    mutableHandlers,
-    mutableCollectionHandlers
+    false,
+    mutableHandlers, // baseHandlers.ts
+    mutableCollectionHandlers // baseHandlers.ts
   )
 }
-
-export function readonly(target: object) {
-  // value is a mutable observable, retrieve its original and return
-  // a readonly version.
-  // 如果目标(target)是一个可变的观测对象, 检索reactiveToRaw集合
-  // 如果找到目标(target)的原始定义对象就使用原始对象调用createReactiveObject方法
-  if (reactiveToRaw.has(target)) {
-    target = reactiveToRaw.get(target)
-  }
-  return createReactiveObject(
-    target,
-    rawToReadonly,
-    readonlyToRaw,
-    readonlyHandlers,
-    readonlyCollectionHandlers
-  )
-}
-
 
 function createReactiveObject(
-  target: any,
-  toProxy: WeakMap<any, any>,
-  toRaw: WeakMap<any, any>,
+  target: Target,
+  isReadonly: boolean,
   baseHandlers: ProxyHandler<any>,
   collectionHandlers: ProxyHandler<any>
 ) {
-  // 如果target不是对象, 直接返回target
-  // 在开发环境下会显示警告
   if (!isObject(target)) {
     if (__DEV__) {
       console.warn(`value cannot be made reactive: ${String(target)}`)
     }
     return target
   }
-  // target already has corresponding Proxy.
-  // 如果target已经有相对应的代理对象, 直接返回对应代理对象
-  let observed = toProxy.get(target)
-  if (observed !== void 0) {
-    return observed
-  }
-  // target is already a Proxy
-  // 如果target本身是代理对象, 直接返回target
-  if (toRaw.has(target)) {
+  // target is already a Proxy, return it.
+  // exception: calling readonly() on a reactive object
+  if (
+    target[ReactiveFlags.RAW] &&
+    !(isReadonly && target[ReactiveFlags.IS_REACTIVE])
+  ) {
     return target
+  }
+  // target already has corresponding Proxy
+  const proxyMap = isReadonly ? readonlyMap : reactiveMap
+  const existingProxy = proxyMap.get(target)
+  if (existingProxy) {
+    return existingProxy
   }
   // only a whitelist of value types can be observed.
-  // 如果target不可观测, 直接返回
-  if (!canObserve(target)) {
+  const targetType = getTargetType(target)
+  if (targetType === TargetType.INVALID) {
     return target
   }
-  // 如果target是集合类型, 则使用collectionHandlers来处理, 否则使用baseHandlers进行处理
-  const handlers = collectionTypes.has(target.constructor)
-    ? collectionHandlers
-    : baseHandlers
-  // 返回值, 使用ES6的Proxy对target进行代理, 代理函数为上方判断结果的handlers
-  observed = new Proxy(target, handlers)
-  // 将原始值与被观测值存入全局变量
-  toProxy.set(target, observed)
-  toRaw.set(observed, target)
-  // 如果target没有对应KeyToDepMap, 则初始化Map
-  if (!targetMap.has(target)) {
-    targetMap.set(target, new Map())
-  }
-  // 返回响应式对象
-  return observed
-}
-
-// 判断值是否是可观测对象, 值需要同时满足的条件如下:
-// 不是Vue Component
-// 不是虚拟DOM
-// 通过'可观测对象正则'校验
-// 不存在于'无需观测集合'中
-const canObserve = (value: any): boolean => {
-  return (
-    !value._isVue &&
-    !value._isVNode &&
-    observableValueRE.test(toTypeString(value)) &&
-    !nonReactiveValues.has(value)
+  const proxy = new Proxy(
+    target,
+    targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers
   )
+  proxyMap.set(target, proxy)
+  return proxy
 }
 ```
 
-## Handlers
 
-+ Handlers
 
-```typescript
-// baseHandlers
-export const mutableHandlers: ProxyHandler<any> = {
-  get: createGetter(false),
-  set,
-  deleteProperty,
-  has,
-  ownKeys
-}
-// readonlyHandlers
-export const readonlyHandlers: ProxyHandler<any> = {
-  get: createGetter(true),
-  set(target: any, key: string | symbol, value: any, receiver: any): boolean {
-    if (LOCKED) {
-      if (__DEV__) {
-        console.warn(
-          `Set operation on key "${String(key)}" failed: target is readonly.`,
-          target
-        )
-      }
-      return true
-    } else {
-      return set(target, key, value, receiver)
-    }
-  },
-  deleteProperty(target: any, key: string | symbol): boolean {
-    if (LOCKED) {
-      if (__DEV__) {
-        console.warn(
-          `Delete operation on key "${String(
-            key
-          )}" failed: target is readonly.`,
-          target
-        )
-      }
-      return true
-    } else {
-      return deleteProperty(target, key)
-    }
-  },
-  has,
-  ownKeys
-}
-```
-
-+ Getter
-
-> packages > reactivity > src > baseHandlers.ts
+> baseHandlers.ts
 
 ```typescript
-const builtInSymbols = new Set(
-  Object.getOwnPropertyNames(Symbol)
-    .map(key => (Symbol as any)[key])
-    .filter(value => typeof value === 'symbol')
-)
-/*
-builtInSymbols内容
-[[Entries]]
-0:
-value: Symbol(Symbol.asyncIterator)
-1:
-value: Symbol(Symbol.hasInstance)
-2:
-value: Symbol(Symbol.isConcatSpreadable)
-3:
-value: Symbol(Symbol.iterator)
-4:
-value: Symbol(Symbol.match)
-5:
-value: Symbol(Symbol.matchAll)
-6:
-value: Symbol(Symbol.replace)
-7:
-value: Symbol(Symbol.search)
-8:
-value: Symbol(Symbol.species)
-9:
-value: Symbol(Symbol.split)
-10:
-value: Symbol(Symbol.toPrimitive)
-11:
-value: Symbol(Symbol.toStringTag)
-12:
-value: Symbol(Symbol.unscopables)
-size: 13
-*/
+// 可变对象处理
+export const mutableHandlers: ProxyHandler<object> = {
+  get, // 拦截对象读取属性操作[访问属性|访问原型链上的属性|Reflect.get()]
+  set, // 拦截对象设置属性操作
+  deleteProperty, // 拦截对对象属性delete操作
+  has, // 拦截 in 操作符
+  ownKeys // 拦截Reflect.ownKeys()
+}
 
-function createGetter(isReadonly: boolean) {
-  return function get(target: any, key: string | symbol, receiver: any) {
-    const res = Reflect.get(target, key, receiver) // 取得目标对象key对应的值
-    // 如果key为Symbol类型, 并且存在于内置Symbols集合中, 直接返回res
-    if (typeof key === 'symbol' && builtInSymbols.has(key)) {
+// handler get拦截对应处理, Proxy get对应文档 
+//[https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/get]
+function createGetter(isReadonly = false, shallow = false) {
+  return function get(target: Target, key: string | symbol, receiver: object) {
+    if (key === ReactiveFlags.IS_REACTIVE) { // __v_isReactive
+      return !isReadonly
+    } else if (key === ReactiveFlags.IS_READONLY) { // __v_isReadonly
+      return isReadonly
+    } else if (
+      // __v_raw
+      key === ReactiveFlags.RAW &&
+      receiver === (isReadonly ? readonlyMap : reactiveMap).get(target)
+    ) {
+      return target
+    }
+    const targetIsArray = isArray(target)
+    // 如果对象是数组, 如果key在['includes', 'indexof', 'lastIndexOf']中
+    if (targetIsArray && hasOwn(arrayInstrumentations, key)) {
+      // 获取arrayInstrumentations key对应方法
+      return Reflect.get(arrayInstrumentations, key, receiver)
+    }
+    // 获取对象key对应的值
+    const res = Reflect.get(target, key, receiver)
+	// 是否是对象内置属性
+    const keyIsSymbol = isSymbol(key)
+    if (
+      keyIsSymbol
+        ? builtInSymbols.has(key as symbol)
+        : key === `__proto__` || key === `__v_isRef`
+    ) {
       return res
     }
-    // 如果值是ref, 即 res[Symbol(__DEV__ ? 'refSymbol' : undefined)] === true
-    if (isRef(res)) {
-      return res.value
+	// 如果不是只读对象
+    if (!isReadonly) {
+      track(target, TrackOpTypes.GET, key)
     }
-    // 跟踪目标值
-    track(target, OperationTypes.GET, key)
-    return isObject(res)
-      ? isReadonly
-        ? // need to lazy access readonly and reactive here to avoid
-          // circular dependency
-          readonly(res)
-        : reactive(res)
-      : res
+    // 如果是浅响应式的(根属性)
+    if (shallow) {
+      return res
+    }
+      
+    if (isRef(res)) {
+      // ref unwrapping - does not apply for Array + integer key.
+      const shouldUnwrap = !targetIsArray || !isIntegerKey(key)
+      return shouldUnwrap ? res.value : res
+    }
+
+    if (isObject(res)) {
+      // Convert returned value into a proxy as well. we do the isObject check
+      // here to avoid invalid value warning. Also need to lazy access readonly
+      // and reactive here to avoid circular dependency.
+      // 将是object的返回值也转换为proxy. 
+      return isReadonly ? readonly(res) : reactive(res)
+    }
+
+    return res
   }
 }
+
 ```
 
-## Effect
 
-> packages > reactivity > src > effect.ts
+
+> effect.ts
 
 ```typescript
-// 此处传入的key为要获取对象的属性名
-export function track(
-  target: any,
-  type: OperationTypes,
-  key?: string | symbol
-) {
-  // 在所有的钩子(hooks)过程中shouldTrack会置为false
-  if (!shouldTrack) {
+export function track(target: object, type: TrackOpTypes, key: unknown) {
+  // 如果不应该追踪 或者 没有影响则直接返回
+  if (!shouldTrack || activeEffect === undefined) {
     return
   }
-  // 取出最后一个放入响应式影响数组中的数据
-  const effect = activeReactiveEffectStack[activeReactiveEffectStack.length - 1]
-  // 如果effect有值
-  if (effect) {
-    if (type === OperationTypes.ITERATE) {
-      key = ITERATE_KEY // Symbol('iterate')
-    }
-    // 找到该对象对应的响应式影响map(KeyToDepMap)
-    let depsMap = targetMap.get(target)
-    if (depsMap === void 0) {
-      targetMap.set(target, (depsMap = new Map()))
-    }
-    // 根据对象属性(key)找到对应的依赖
-    let dep = depsMap.get(key!) // !为解释这里key一定有值, 因为参数key为可选,默认解析为undefined,此处会报错.
-    // 如果该属性没有对应依赖,则初始化依赖
-    if (dep === void 0) {
-      depsMap.set(key!, (dep = new Set()))
-    }
-    // 如果影响键值对中还未有该影响
-    if (!dep.has(effect)) {
-      // 订阅该影响
-      dep.add(effect)
-      // 影响栈订阅依赖
-      effect.deps.push(dep)
-      // 如果是开发环境并且有跟踪回调事件
-      if (__DEV__ && effect.onTrack) {
-        effect.onTrack({
-          effect,
-          target,
-          type,
-          key
-        })
-      }
+  // 获取依赖对照
+  let depsMap = targetMap.get(target)
+  if (!depsMap) {
+    targetMap.set(target, (depsMap = new Map()))
+  }
+  // 获取key对应依赖
+  let dep = depsMap.get(key)
+  if (!dep) {
+    depsMap.set(key, (dep = new Set()))
+  }
+  // 依赖是否有对应影响
+  if (!dep.has(activeEffect)) {
+    // 没有依赖则添加依赖
+    dep.add(activeEffect)
+    activeEffect.deps.push(dep)
+    if (__DEV__ && activeEffect.options.onTrack) {
+      activeEffect.options.onTrack({
+        effect: activeEffect,
+        target,
+        type,
+        key
+      })
     }
   }
 }
 ```
 
-## 暴露出的其他方法
 
-> 这些方法实质就是在操作全集变量定义好的集合
+
+
+
+
+
+> collectionHandlers.ts
 
 ```typescript
-// 判断值是否是响应式的
-export function isReactive(value: any): boolean {
-  return reactiveToRaw.has(value) || readonlyToRaw.has(value)
-}
-// 判断值是否是只读的
-export function isReadonly(value: any): boolean {
-  return readonlyToRaw.has(value)
-}
-// 将响应式对象转换成原始对象
-export function toRaw<T>(observed: T): T {
-  return reactiveToRaw.get(observed) || readonlyToRaw.get(observed) || observed
-}
-// 将值标记为只读
-export function markReadonly<T>(value: T): T {
-  readonlyValues.add(value)
-  return value
-}
-// 将值标记为无需响应式监听
-export function markNonReactive<T>(value: T): T {
-  nonReactiveValues.add(value)
-  return value
+// 可变数组对象处理
+export const mutableCollectionHandlers: ProxyHandler<CollectionTypes> = {
+  get: createInstrumentationGetter(false, false)
 }
 ```
+
