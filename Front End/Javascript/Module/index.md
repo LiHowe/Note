@@ -18,3 +18,4 @@ Promise.all([im1(), im2(), im3()]).then(([re1, re2, re3]) => {})
 
 CommonJS module.export 是对值的拷贝, 只有在脚本运行时才会完成
 ES6 export 是一种静态定义, 是在静态编译阶段就会完成的
+
